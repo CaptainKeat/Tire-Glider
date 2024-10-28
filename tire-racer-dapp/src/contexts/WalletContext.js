@@ -2,8 +2,9 @@ import React, { createContext, useContext, useMemo } from 'react';
 import { Connection } from '@solana/web3.js';
 import {
   WalletProvider,
-  ConnectionProvider,
-  useWallet,
+  ConnectionProvider
+  // Remove this line if `useWallet` is unused, or use it in your component
+  // useWallet,
 } from '@solana/wallet-adapter-react';
 import { PhantomWalletAdapter } from '@solana/wallet-adapter-phantom';
 
