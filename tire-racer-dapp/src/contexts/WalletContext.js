@@ -1,28 +1,33 @@
-import React, { createContext, useContext, useMemo } from 'react';
-import { Connection } from '@solana/web3.js';
-import {
-  WalletProvider,
-  ConnectionProvider
-  // Remove this line if `useWallet` is unused, or use it in your component
-  // useWallet,
-} from '@solana/wallet-adapter-react';
+import React from 'react';
+import { useWallet } from '@solana/wallet-adapter-react';
 import { PhantomWalletAdapter } from '@solana/wallet-adapter-phantom';
 
-const WalletContext = createContext();
+const Login = () => {
+  const { wallets, select, connect, disconnect, connected, publicKey } = useWallet();
 
-export const WalletContextProvider = ({ children }) => {
-  const wallet = useMemo(() => [new PhantomWalletAdapter()], []);
-  const connection = new Connection("https://api.devnet.solana.com");
+  const handleConnect = async () => {
+    // Find the Phantom wallet adapter and select it if available
+    const phantomWallet = wallets.find(wallet => wallet.name === 'Phantom');
+    if (phantomWallet) {
+      select(phantomWallet.name);
+      await connect();
+    } else {
+      console.error('Phantom wallet not found');
+    }
+  };
 
   return (
-    <ConnectionProvider endpoint="https://api.devnet.solana.com">
-      <WalletProvider wallets={wallet} autoConnect>
-        <WalletContext.Provider value={{ connection }}>
-          {children}
-        </WalletContext.Provider>
-      </WalletProvider>
-    </ConnectionProvider>
+    <div style={{ textAlign: 'center', marginTop: '20%' }}>
+      {connected ? (
+        <>
+          <p>Connected: {publicKey.toBase58()}</p>
+          <button onClick={disconnect}>Disconnect</button>
+        </>
+      ) : (
+        <button onClick={handleConnect}>Connect to Phantom Wallet</button>
+      )}
+    </div>
   );
 };
 
-export const useWalletContext = () => useContext(WalletContext);
+export default Login;
